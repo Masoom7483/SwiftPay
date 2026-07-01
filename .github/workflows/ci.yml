@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Run unit tests and package modules
+        run: mvn -B verify
+
+      - name: Validate Docker Compose
+        run: docker compose config -q
+
+  docker-images:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: build-test
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build transaction gateway image
+        run: docker build -f transaction-gateway/Dockerfile -t swiftpay/transaction-gateway:ci .
+
+      - name: Build ledger service image
+        run: docker build -f ledger-service/Dockerfile -t swiftpay/ledger-service:ci .
+
+      - name: Build analytics worker image
+        run: docker build -f analytics-worker/Dockerfile -t swiftpay/analytics-worker:ci .

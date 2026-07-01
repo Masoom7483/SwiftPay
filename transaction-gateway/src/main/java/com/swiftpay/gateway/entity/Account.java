@@ -33,6 +33,12 @@ public class Account {
         // required by JPA
     }
 
+    public Account(String accountId, BigDecimal balance, String currency) {
+        this.accountId = accountId;
+        this.balance = balance;
+        this.currency = currency;
+    }
+
     public boolean canDebit(BigDecimal amount) {
         return balance.compareTo(amount) >= 0;
     }

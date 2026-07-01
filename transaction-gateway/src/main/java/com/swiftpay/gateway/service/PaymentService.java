@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -34,15 +32,18 @@ public class PaymentService {
     private final AccountRepository accountRepository;
     private final IdempotencyService idempotencyService;
     private final PaymentEventProducer eventProducer;
+    private final BalanceCacheService balanceCacheService;
 
     public PaymentService(PaymentRepository repository,
                           AccountRepository accountRepository,
                           IdempotencyService idempotencyService,
-                          PaymentEventProducer eventProducer) {
+                          PaymentEventProducer eventProducer,
+                          BalanceCacheService balanceCacheService) {
         this.repository = repository;
         this.accountRepository = accountRepository;
         this.idempotencyService = idempotencyService;
         this.eventProducer = eventProducer;
+        this.balanceCacheService = balanceCacheService;
     }
 
     @Transactional
@@ -58,17 +59,17 @@ public class PaymentService {
             PaymentTransaction txn = new PaymentTransaction(
                     request.transactionId(), request.senderId(), request.receiverId(),
                     request.amount(), request.currency(), PaymentStatus.PENDING, now);
-            repository.saveAndFlush(txn);
+            try {
+                repository.saveAndFlush(txn);
+            } catch (DataIntegrityViolationException e) {
+                // DB says this id already exists — a genuine duplicate slipped past Redis.
+                throw new DuplicateTransactionException(request.transactionId());
+            }
 
             PaymentInitiatedEvent event = new PaymentInitiatedEvent(
                     txn.getTransactionId(), txn.getSenderId(), txn.getReceiverId(),
                     txn.getAmount(), txn.getCurrency(), now);
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    eventProducer.publishInitiated(event);
-                }
-            });
+            eventProducer.publishInitiated(event);
 
             log.info("Accepted payment txn={} amount={} {}",
                     txn.getTransactionId(), txn.getAmount(), txn.getCurrency());
@@ -77,9 +78,8 @@ public class PaymentService {
                     txn.getTransactionId(), txn.getStatus(), txn.getSenderId(),
                     txn.getReceiverId(), txn.getAmount(), txn.getCurrency(), txn.getCreatedAt());
 
-        } catch (DataIntegrityViolationException e) {
-            // DB says this id already exists — a genuine duplicate slipped past Redis.
-            throw new DuplicateTransactionException(request.transactionId());
+        } catch (DuplicateTransactionException e) {
+            throw e;
         } catch (RuntimeException e) {
             // Downstream failure: free the Redis reservation so the client can retry.
             idempotencyService.release(request.transactionId());
@@ -92,20 +92,28 @@ public class PaymentService {
             throw new SameAccountTransferException();
         }
 
-        Account sender = accountRepository.findById(request.senderId())
-                .orElseThrow(() -> new AccountNotFoundException("Sender", request.senderId()));
-        Account receiver = accountRepository.findById(request.receiverId())
-                .orElseThrow(() -> new AccountNotFoundException("Receiver", request.receiverId()));
+        BalanceCacheService.CachedAccount sender = accountForValidation("Sender", request.senderId());
+        BalanceCacheService.CachedAccount receiver = accountForValidation("Receiver", request.receiverId());
 
-        if (!sender.getCurrency().equals(request.currency())) {
-            throw new CurrencyMismatchException(sender.getAccountId(), sender.getCurrency(), request.currency());
+        if (!sender.currency().equals(request.currency())) {
+            throw new CurrencyMismatchException(sender.accountId(), sender.currency(), request.currency());
         }
-        if (!receiver.getCurrency().equals(request.currency())) {
-            throw new CurrencyMismatchException(receiver.getAccountId(), receiver.getCurrency(), request.currency());
+        if (!receiver.currency().equals(request.currency())) {
+            throw new CurrencyMismatchException(receiver.accountId(), receiver.currency(), request.currency());
         }
         if (!sender.canDebit(request.amount())) {
             throw new InsufficientFundsException(
-                    sender.getAccountId(), sender.getBalance(), request.amount(), request.currency());
+                    sender.accountId(), sender.balance(), request.amount(), request.currency());
         }
+    }
+
+    private BalanceCacheService.CachedAccount accountForValidation(String accountRole, String accountId) {
+        return balanceCacheService.find(accountId)
+                .orElseGet(() -> {
+                    Account account = accountRepository.findById(accountId)
+                            .orElseThrow(() -> new AccountNotFoundException(accountRole, accountId));
+                    balanceCacheService.cache(account);
+                    return BalanceCacheService.CachedAccount.from(account);
+                });
     }
 }

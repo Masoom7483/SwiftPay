@@ -1,5 +1,7 @@
 package com.swiftpay.gateway.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.swiftpay.common.PaymentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -8,6 +10,7 @@ import java.time.Instant;
 
 
 @Schema(name = "PaymentResponse", description = "Acknowledgement of an accepted payment")
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record PaymentResponse(
 
         @Schema(description = "Idempotency / transaction id echoed back",

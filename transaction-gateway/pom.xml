@@ -12,7 +12,7 @@
 
     <artifactId>transaction-gateway</artifactId>
     <name>SwiftPay Transaction Gateway (Service A)</name>
-    <description>REST API: accepts payments, enforces idempotency, emits PaymentInitiated</description>
+    <description>REST API: accepts payments, enforces idempotency, queues PaymentInitiated via outbox</description>
 
     <dependencies>
         <dependency>
@@ -39,6 +39,14 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
         <!-- Redis: idempotency + balance cache -->

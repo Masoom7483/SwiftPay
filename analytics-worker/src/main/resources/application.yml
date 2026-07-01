@@ -13,8 +13,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
+
+  flyway:
+    enabled: true
 
   kafka:
     # Host/IntelliJ runs use the EXTERNAL listener (localhost:29092).

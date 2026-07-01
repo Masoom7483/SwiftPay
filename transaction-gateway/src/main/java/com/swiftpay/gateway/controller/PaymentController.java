@@ -35,8 +35,8 @@ public class PaymentController {
     @Operation(
             summary = "Initiate a payment",
             description = "Validates the request, checks the referenced accounts and balance, "
-                    + "enforces idempotency (24h), persists a PENDING record and emits a "
-                    + "PaymentInitiated event. Returns 202 Accepted."
+                    + "enforces idempotency (24h), persists a PENDING record and queues a "
+                    + "PaymentInitiated event through the transactional outbox. Returns 202 Accepted."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "202", description = "Payment accepted (PENDING)",
@@ -44,13 +44,13 @@ public class PaymentController {
                             schema = @Schema(implementation = PaymentResponse.class),
                             examples = @ExampleObject(name = "accepted", value = """
                                     {
-                                      "transactionId": "a3f1c2d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+                                      "transaction_id": "a3f1c2d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
                                       "status": "PENDING",
-                                      "senderId": "acc_1001",
-                                      "receiverId": "acc_2002",
+                                      "sender_id": "acc_1001",
+                                      "receiver_id": "acc_2002",
                                       "amount": 150.75,
                                       "currency": "USD",
-                                      "createdAt": "2026-07-01T10:15:30Z"
+                                      "created_at": "2026-07-01T10:15:30Z"
                                     }"""))),
             @ApiResponse(responseCode = "400", description = "Validation error",
                     content = @Content(mediaType = "application/json",
@@ -71,9 +71,9 @@ public class PaymentController {
                     required = true,
                     content = @Content(examples = @ExampleObject(name = "sample", value = """
                             {
-                              "transactionId": "a3f1c2d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
-                              "senderId": "acc_1001",
-                              "receiverId": "acc_2002",
+                              "transaction_id": "a3f1c2d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+                              "sender_id": "acc_1001",
+                              "receiver_id": "acc_2002",
                               "amount": 150.75,
                               "currency": "USD"
                             }""")))

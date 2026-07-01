@@ -35,6 +35,12 @@ public class PaymentTransaction {
     protected PaymentTransaction() {
     }
 
+    public PaymentTransaction(String transactionId, PaymentStatus status, Instant updatedAt) {
+        this.transactionId = transactionId;
+        this.status = status;
+        this.updatedAt = updatedAt;
+    }
+
     public String getTransactionId() {
         return transactionId;
     }

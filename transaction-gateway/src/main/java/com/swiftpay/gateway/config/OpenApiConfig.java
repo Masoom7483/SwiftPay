@@ -24,8 +24,9 @@ public class OpenApiConfig {
 
                                 Payments are accepted asynchronously: this service validates the
                                 request, guarantees idempotency (via Redis, 24h window), persists a
-                                PENDING record and emits a `PaymentInitiated` event. The Ledger
-                                Service applies the transfer and reports the final status.
+                                PENDING record and queues a `PaymentInitiated` event through the
+                                transactional outbox. The Ledger Service applies the transfer and
+                                reports the final status.
                                 """)
                         .version("v1")
                         .contact(new Contact().name("SwiftPay Team").email("dev@swiftpay.example"))

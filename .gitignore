@@ -26,3 +26,5 @@ Thumbs.db
 *.pcap
 *.jtl
 k6-results/
+load-tests/results/*
+!load-tests/results/.gitkeep

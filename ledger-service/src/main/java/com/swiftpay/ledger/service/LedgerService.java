@@ -23,13 +23,16 @@ public class LedgerService {
     private final AccountRepository accountRepository;
     private final LedgerEntryRepository ledgerEntryRepository;
     private final PaymentTransactionRepository paymentTransactionRepository;
+    private final LedgerEventProducer eventProducer;
 
     public LedgerService(AccountRepository accountRepository,
                          LedgerEntryRepository ledgerEntryRepository,
-                         PaymentTransactionRepository paymentTransactionRepository) {
+                         PaymentTransactionRepository paymentTransactionRepository,
+                         LedgerEventProducer eventProducer) {
         this.accountRepository = accountRepository;
         this.ledgerEntryRepository = ledgerEntryRepository;
         this.paymentTransactionRepository = paymentTransactionRepository;
+        this.eventProducer = eventProducer;
     }
 
     @Transactional
@@ -74,6 +77,7 @@ public class LedgerService {
         // Update the gateway's transaction status PENDING -> COMPLETED, in this
         // same transaction, so the status flip and the balance change commit together.
         updateGatewayStatus(event.transactionId(), PaymentStatus.COMPLETED);
+        eventProducer.publishOutcome(entry);
 
         log.info("Applied transfer txn={} {} {} -> {}", event.transactionId(),
                 event.amount(), event.senderId(), event.receiverId());
@@ -88,6 +92,7 @@ public class LedgerService {
 
         // A business rejection is a definitive outcome: mark PENDING -> FAILED and commit.
         updateGatewayStatus(event.transactionId(), PaymentStatus.FAILED);
+        eventProducer.publishOutcome(entry);
 
         log.warn("Rejected transfer txn={} reason={}", event.transactionId(), reason);
         return entry;

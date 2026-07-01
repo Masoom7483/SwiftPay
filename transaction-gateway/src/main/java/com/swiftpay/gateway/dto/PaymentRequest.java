@@ -1,5 +1,7 @@
 package com.swiftpay.gateway.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
@@ -11,6 +13,7 @@ import java.math.BigDecimal;
 
 
 @Schema(name = "PaymentRequest", description = "A peer-to-peer payment instruction")
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record PaymentRequest(
 
         @Schema(description = "Client-generated unique id used for idempotency (UUID recommended)",

@@ -13,8 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      # 'update' is convenient for the hackathon; switch to Flyway/Liquibase for prod.
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:
@@ -26,6 +25,9 @@ spring:
     redis:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
+
+  flyway:
+    enabled: true
 
   kafka:
     # Host/IntelliJ runs use the EXTERNAL listener (localhost:29092).
