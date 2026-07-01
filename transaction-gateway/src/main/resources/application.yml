@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: transaction-gateway
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/swiftpay}
+    username: ${SPRING_DATASOURCE_USERNAME:swiftpay}
+    password: ${SPRING_DATASOURCE_PASSWORD:swiftpay}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # 'update' is convenient for the hackathon; switch to Flyway/Liquibase for prod.
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
+
+  kafka:
+    # Host/IntelliJ runs use the EXTERNAL listener (localhost:29092).
+    # Docker-internal runs override this with kafka:9092 via env var.
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      properties:
+        enable.idempotence: true
+        spring.json.add.type.headers: false
+
+# Swagger / OpenAPI (springdoc)
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+# Observability: expose health at /health via actuator
+management:
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: health
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    redis:
+      enabled: true
+
+logging:
+  level:
+    com.swiftpay: INFO

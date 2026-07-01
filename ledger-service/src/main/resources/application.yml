@@ -1,0 +1,68 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ledger-service
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/swiftpay}
+    username: ${SPRING_DATASOURCE_USERNAME:swiftpay}
+    password: ${SPRING_DATASOURCE_PASSWORD:swiftpay}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+
+  kafka:
+    # Host/IntelliJ runs use the EXTERNAL listener (localhost:29092).
+    # Docker-internal runs override this with kafka:9092 via env var.
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    consumer:
+      group-id: ledger-service
+      auto-offset-reset: earliest
+      # Manual retries via DefaultErrorHandler; commit after successful processing.
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.swiftpay.common.event
+        spring.json.value.default.type: com.swiftpay.common.event.PaymentInitiatedEvent
+        spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        spring.json.add.type.headers: false
+    listener:
+      ack-mode: record
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: health
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+logging:
+  level:
+    com.swiftpay: INFO

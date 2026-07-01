@@ -1,0 +1,47 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: analytics-worker
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/swiftpay}
+    username: ${SPRING_DATASOURCE_USERNAME:swiftpay}
+    password: ${SPRING_DATASOURCE_PASSWORD:swiftpay}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+  kafka:
+    # Host/IntelliJ runs use the EXTERNAL listener (localhost:29092).
+    # Docker-internal runs override this with kafka:9092 via env var.
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    consumer:
+      group-id: analytics-worker
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.swiftpay.common.event
+        spring.json.value.default.type: com.swiftpay.common.event.PaymentCompletedEvent
+        spring.json.use.type.headers: false
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: health
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.swiftpay: INFO
