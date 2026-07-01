@@ -9,11 +9,7 @@ import org.springframework.kafka.core.ProducerFactory;
 
 import java.util.Map;
 
-/**
- * Explicit, strongly-typed {@code KafkaTemplate<String, Object>} so producers can
- * inject it unambiguously. Serializer settings come from {@code application.yml}
- * (StringSerializer key, JsonSerializer value) via {@link KafkaProperties}.
- */
+
 @Configuration
 public class KafkaProducerConfig {
 

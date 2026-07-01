@@ -14,16 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
-/**
- * Applies a peer-to-peer transfer atomically.
- *
- * <p>The whole method runs in one DB transaction: both accounts are locked
- * FOR UPDATE, the balances are moved, and a {@link LedgerEntry} audit row is
- * written. If anything fails the transaction rolls back and nothing is applied.
- *
- * <p>Idempotency: if a ledger entry already exists for the transaction id we
- * short-circuit — the event was already processed (e.g. a Kafka redelivery).
- */
+
 @Service
 public class LedgerService {
 
@@ -41,10 +32,6 @@ public class LedgerService {
         this.paymentTransactionRepository = paymentTransactionRepository;
     }
 
-    /**
-     * @return the resulting {@link LedgerEntry} (COMPLETED or FAILED). The caller
-     *         inspects its status to decide which Kafka event to emit.
-     */
     @Transactional
     public LedgerEntry applyTransfer(PaymentInitiatedEvent event) {
         // Idempotent replay guard: already processed this transaction id.
@@ -106,11 +93,7 @@ public class LedgerService {
         return entry;
     }
 
-    /**
-     * Flips the gateway-owned {@code payment_transactions} row to the given status.
-     * Best-effort: if the row isn't visible yet we skip it — the {@link LedgerEntry}
-     * is the ledger's own authoritative record either way.
-     */
+
     private void updateGatewayStatus(String transactionId, PaymentStatus status) {
         paymentTransactionRepository.findById(transactionId)
                 .ifPresent(txn -> txn.markStatus(status));

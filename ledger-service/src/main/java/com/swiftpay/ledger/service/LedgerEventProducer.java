@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
-/**
- * Emits the outcome of a transfer back to Kafka: {@code PaymentCompleted} on
- * success, {@code PaymentFailed} otherwise.
- */
+
 @Component
 public class LedgerEventProducer {
 

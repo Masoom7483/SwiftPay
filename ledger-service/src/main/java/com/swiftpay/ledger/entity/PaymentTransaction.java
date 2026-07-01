@@ -11,15 +11,7 @@ import jakarta.persistence.Version;
 
 import java.time.Instant;
 
-/**
- * Ledger-side view of the {@code payment_transactions} row that the gateway
- * created with status PENDING. The ledger updates its {@code status} to
- * COMPLETED / FAILED inside the same atomic transfer transaction.
- *
- * <p>Only the columns the ledger needs to update are mapped here — the gateway
- * owns the full entity; on UPDATE Hibernate only touches the mapped columns and
- * leaves the rest untouched.
- */
+
 @Entity
 @Table(name = "payment_transactions")
 public class PaymentTransaction {

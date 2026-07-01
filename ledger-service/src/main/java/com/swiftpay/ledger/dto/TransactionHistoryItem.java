@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * A single row in a user's transaction history, with the direction relative to
- * the queried user (DEBIT if they sent, CREDIT if they received).
- */
+
 @Schema(name = "TransactionHistoryItem", description = "One entry in a user's transaction history")
 public record TransactionHistoryItem(
         @Schema(example = "a3f1c2d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d") String transactionId,

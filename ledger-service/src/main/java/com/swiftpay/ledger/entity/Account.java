@@ -8,10 +8,7 @@ import jakarta.persistence.Version;
 
 import java.math.BigDecimal;
 
-/**
- * An account holding a balance. Balance mutations happen under a pessimistic
- * lock inside the transfer transaction to prevent lost updates under concurrency.
- */
+
 @Entity
 @Table(name = "accounts")
 public class Account {

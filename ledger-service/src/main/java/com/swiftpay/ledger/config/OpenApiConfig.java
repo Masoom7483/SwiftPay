@@ -5,9 +5,7 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * OpenAPI metadata for the Ledger Service. Swagger UI at {@code /swagger-ui.html}.
- */
+
 @Configuration
 public class OpenApiConfig {
 

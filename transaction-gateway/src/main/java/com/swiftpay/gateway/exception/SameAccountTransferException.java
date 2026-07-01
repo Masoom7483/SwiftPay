@@ -1,8 +1,6 @@
 package com.swiftpay.gateway.exception;
 
-/**
- * Thrown when a payment attempts to debit and credit the same account.
- */
+
 public class SameAccountTransferException extends RuntimeException {
 
     public SameAccountTransferException() {

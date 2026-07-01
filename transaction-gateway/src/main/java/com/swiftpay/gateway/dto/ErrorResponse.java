@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * Standard error envelope returned for every non-2xx response, so clients get
- * a consistent, documented shape (see Non-Functional Requirement: API Standards).
- */
+
 @Schema(name = "ErrorResponse", description = "Standard error payload")
 public record ErrorResponse(
 

@@ -10,14 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-/**
- * Consumes {@code PaymentInitiated} events and drives the transfer.
- *
- * <p>Resilience: transient failures (e.g. the DB is briefly down) propagate out
- * of this method so the container's error handler retries with back-off, and
- * ultimately routes to the DLT after exhausting attempts. See
- * {@code KafkaConsumerConfig} for the retry/DLT policy.
- */
 @Component
 public class PaymentInitiatedListener {
 

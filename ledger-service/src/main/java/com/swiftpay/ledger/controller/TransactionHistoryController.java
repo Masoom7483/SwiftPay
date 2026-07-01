@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Reporting endpoint (Service B): fetch the transaction history for a user.
- */
+
 @RestController
 @RequestMapping(value = "/v1/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Reporting", description = "Per-user transaction history")

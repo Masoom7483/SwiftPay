@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * Translates exceptions into the standard {@link ErrorResponse} envelope with
- * appropriate HTTP status codes (Non-Functional Requirement: API Standards).
- */
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

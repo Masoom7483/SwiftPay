@@ -7,11 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-/**
- * Publishes {@link PaymentInitiatedEvent}s to Kafka. The {@code transactionId}
- * is used as the message key so all events for a payment land on the same
- * partition, preserving per-payment ordering.
- */
+
 @Component
 public class PaymentEventProducer {
 

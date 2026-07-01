@@ -14,16 +14,7 @@ import org.springframework.util.backoff.ExponentialBackOff;
 
 import java.util.Map;
 
-/**
- * Kafka wiring for the ledger:
- * <ul>
- *   <li>A producer {@link KafkaTemplate} for emitting completed/failed events.</li>
- *   <li>A {@link DefaultErrorHandler} giving consumers exponential-backoff retries
- *       (so a brief DB outage recovers) and, after exhausting them, publishing the
- *       poisoned record to a {@code <topic>.DLT} dead-letter topic.</li>
- * </ul>
- * The {@code JsonDeserializer} / trusted packages are configured in application.yml.
- */
+
 @Configuration
 public class KafkaConsumerConfig {
 

@@ -24,20 +24,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.Instant;
 import java.util.Objects;
 
-/**
- * Orchestrates the "accept a payment" use case:
- * <ol>
- *   <li>Run gateway-side business validation.</li>
- *   <li>Reserve the transaction id in Redis (fast idempotency check).</li>
- *   <li>Persist a PENDING row to PostgreSQL (durable idempotency via PK).</li>
- *   <li>Emit a {@code PaymentInitiated} event to Kafka.</li>
- * </ol>
- *
- * <p>The DB write and the event publish are intentionally kept simple here;
- * production-grade delivery would use the transactional outbox pattern (see
- * ARCHITECTURE.md). We reserve/release the Redis key so failures don't
- * permanently block a legitimate retry.
- */
+
 @Service
 public class PaymentService {
 

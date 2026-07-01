@@ -10,15 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-/**
- * Central Swagger / OpenAPI metadata for the Transaction Gateway.
- *
- * <p>Once the app is running the interactive docs are served at:
- * <ul>
- *   <li>Swagger UI: {@code http://localhost:8080/swagger-ui.html}</li>
- *   <li>OpenAPI JSON: {@code http://localhost:8080/v3/api-docs}</li>
- * </ul>
- */
+
 @Configuration
 public class OpenApiConfig {
 

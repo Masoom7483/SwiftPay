@@ -13,11 +13,7 @@ import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * Persistent record of a payment as seen by the gateway. The {@code transactionId}
- * is the primary key, which doubles as a DB-level idempotency guard (a duplicate
- * insert violates the PK constraint).
- */
+
 @Entity
 @Table(name = "payment_transactions", indexes = {
         @Index(name = "idx_payment_sender", columnList = "sender_id"),

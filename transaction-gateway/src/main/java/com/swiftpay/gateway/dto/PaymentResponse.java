@@ -6,11 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * Response returned by {@code POST /v1/payments} once the request is accepted.
- * The status is {@link PaymentStatus#PENDING} — the transfer is applied
- * asynchronously by the Ledger Service.
- */
+
 @Schema(name = "PaymentResponse", description = "Acknowledgement of an accepted payment")
 public record PaymentResponse(
 

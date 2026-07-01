@@ -9,12 +9,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.math.BigDecimal;
 
-/**
- * Inbound payment request body for {@code POST /v1/payments}.
- *
- * <p>Every field carries a Swagger {@link Schema} annotation so the generated
- * OpenAPI doc shows an example payload and validation constraints.
- */
+
 @Schema(name = "PaymentRequest", description = "A peer-to-peer payment instruction")
 public record PaymentRequest(
 

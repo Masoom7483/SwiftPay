@@ -12,11 +12,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * Immutable audit record of an applied (or attempted) transfer. One row per
- * transaction id; this is the source for the per-user reporting endpoint and
- * doubles as the ledger-side idempotency guard.
- */
+
 @Entity
 @Table(name = "ledger_entries", indexes = {
         @Index(name = "idx_ledger_sender", columnList = "sender_id"),

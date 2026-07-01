@@ -9,10 +9,7 @@ import org.hibernate.annotations.Immutable;
 
 import java.math.BigDecimal;
 
-/**
- * Read-only gateway view of ledger accounts for fast payment preflight checks.
- * The ledger service remains the writer and source of truth for balance moves.
- */
+
 @Entity
 @Immutable
 @Table(name = "accounts")
