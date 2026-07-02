@@ -19,7 +19,7 @@ springdoc/OpenAPI · Docker Compose
 
 ## PCAP Trace
 
-The full PCAP trace generated during the 250 TPS / 1 million transactions load test is available at:
+The full PCAP trace generated during the 250 TPS / 1 million transactions load test is available at
 
 https://drive.google.com/drive/folders/1a-SQ8aBfTJQg5BCdjJq3uE9Mkvb2T9-D?usp=sharing
 
