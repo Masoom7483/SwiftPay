@@ -17,6 +17,12 @@ springdoc/OpenAPI · Docker Compose
 | `ledger-service` | Service B — Kafka consumer, atomic transfer, reporting | 8081 |
 | `analytics-worker` | Service C (bonus) — volume analytics consumer | 8082 |
 
+## PCAP Trace
+
+The full PCAP trace generated during the 250 TPS / 1 million transactions load test is available at:
+
+https://drive.google.com/drive/folders/1a-SQ8aBfTJQg5BCdjJq3uE9Mkvb2T9-D?usp=sharing
+
 ## Run everything (Docker Compose)
 ```bash
 docker compose up --build
